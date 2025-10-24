@@ -3,110 +3,1200 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wopla - Super Admin Dashboard</title>
-    
+    <title>Wopla | Super Admin Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
     <style>
-        /* CSS styles */
+        /* --- 1. Root Variables & Reset --- */
         :root {
-            --primary-color: #48bb78;     /* Wopla Green */
-            --secondary-color: #2d3748;   /* Dark Text */
-            --background-light: #d4b3b3;  
-            --page-bg: #a1b2ac;           
-            --active-bg: #e6fffa;         
-            --danger-color: #e53e3e;      
-            --grey-text: #718096;
-            --border-light: #e2e8f0;
-            --accent-blue: #3182ce;
+            --primary-color: #3498db;     /* Blue */
+            --primary-dark: #2980b9;
+            --sidebar-bg: #2c3e50;        /* Dark Slate Blue */
+            --header-bg: #34495e;         /* Darker Slate Blue */
+            --text-light: #ecf0f1;
+            --text-dark: #333333;
+            --card-bg: #cdbbbb;
+            --shadow-light: rgba(0, 0, 0, 0.1);
+            --shadow-heavy: rgba(0, 0, 0, 0.4);
+            
+            /* Custom Role/Entity Colors */
+            --success-color: #2ecc71;     /* Green - Dish/Active */
+            --vendor-color: #ebb8b2;      /* Red - Vendor */
+            --error-color: #e74c3c;       
+            --employee-color: #8e44ad;    /* Purple - Employee/Admin */
+            --warning-color: #f39c12;     /* Orange - Order/Summary */
+            --company-color: #1abc9c;     /* Turquoise - Company */
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: var(--page-bg); min-height: 100vh; }
-        a { text-decoration: none; }
-        .dashboard-wrapper { display: flex; min-height: 100vh; }
 
-        /* Sidebar Styles */
-        .sidebar { width: 250px; background-color: var(--background-light); box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05); position: sticky; top: 0; height: 100vh; }
-        .sidebar .logo { height: 75px; display: flex; justify-content: center; align-items: center; border-bottom: 1px solid var(--border-light); }
-        .sidebar .logo h2 { color: var(--secondary-color); font-size: 20px; font-weight: 700; }
-        .sidebar ul { list-style: none; padding: 0; }
-        .sidebar li { padding: 0 15px; margin-bottom: 5px; }
-        .sidebar a { display: flex; align-items: center; padding: 10px 10px; color: var(--grey-text); font-size: 16px; border-radius: 6px; font-weight: 500; }
-        .sidebar a i { margin-right: 15px; font-size: 18px; }
-        .sidebar a:hover { background-color: #f7fafc; color: var(--secondary-color); }
-        .sidebar li.active > a { background-color: var(--active-bg); color: var(--primary-color); font-weight: 600; }
-        .nav-title { color: #a0aec0; font-size: 12px; padding: 15px 15px 5px; text-transform: uppercase; }
-        .sidebar li.logout { padding: 0; margin-top: 30px; border-top: 1px solid var(--border-light); }
-        .sidebar li.logout a { color: var(--danger-color); font-weight: 600; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0; padding: 0; display: flex; min-height: 100vh; background-color: #f4f7f6; 
+        }
 
-        /* Main Content Styles */
-        .main-content { flex-grow: 1; }
-        .topbar { height: 75px; display: flex; justify-content: space-between; align-items: center; padding: 20px 30px; background-color: var(--background-light); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); border-bottom: 3px solid var(--border-light); }
-        .page-title h1 { font-size: 26px; color: var(--secondary-color); font-weight: 600; }
-        .page-container { padding: 30px; }
-        .dashboard-header { background-color: var(--background-light); padding: 40px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); margin-bottom: 30px; }
-        .action-box { background-color: var(--background-light); padding: 25px; border-radius: 8px; border-left: 5px solid var(--accent-blue); }
-        .stats-box { background-color: var(--background-light); padding: 25px; border-radius: 8px; }
+        /* --- 2. Layout Structure --- */
+        .sidebar { width: 250px; background-color: var(--sidebar-bg); color: var(--text-light); padding: 20px 0; z-index: 20; box-shadow: 4px 0 15px var(--shadow-heavy); }
+        .sidebar h3 { text-align: center; margin-bottom: 30px; color: var(--primary-color); font-size: 24px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 15px; }
+        .sidebar nav a { display: block; padding: 15px 20px; color: var(--text-light); text-decoration: none; transition: background-color 0.3s, color 0.3s; font-size: 16px; border-left: 5px solid transparent; }
+        .sidebar nav a:hover, .sidebar nav a:focus { background-color: var(--header-bg); color: white; border-left: 5px solid var(--primary-color); }
+        .sidebar nav a i { margin-right: 12px; min-width: 20px; }
+
+        .main-content { flex-grow: 1; display: flex; flex-direction: column; }
+        .header { background-color: var(--header-bg); color: rgb(162, 154, 154); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; z-index: 10; box-shadow: 0 4px 8px var(--shadow-light); }
+
+        /* --- 3. Dashboard Grid & Attractive Cards --- */
+        .dashboard-grid { 
+            padding: 30px; 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+            gap: 30px; 
+            flex-grow: 1; 
+        }
+        
+        .dashboard-card { 
+            background-color: var(--card-bg); 
+            padding: 0; /* Remove internal padding, use padding in inner div */
+            border-radius: 12px; 
+            box-shadow: 0 6px 20px var(--shadow-light); 
+            transition: transform 0.3s ease, box-shadow 0.3s ease; 
+            overflow: hidden; /* For border-radius on header */
+            border-top: 5px solid transparent; /* Default border */
+        }
+        .dashboard-card:hover { 
+            transform: translateY(-5px); 
+            box-shadow: 0 15px 35px rgba(52, 152, 219, 0.3); /* Attractive lift */
+        }
+        
+        /* Specific Card Styling for attractiveness */
+        #ordersListView { grid-column: 1 / -1; border-top-color: var(--warning-color); }
+        #companyListView { border-top-color: var(--company-color); }
+        #vendorListView { border-top-color: var(--vendor-color); }
+        #dishListView { border-top-color: var(--success-color); }
+        
+        .card-header {
+            padding: 20px 25px;
+            background-color: #e9eff2;
+            border-bottom: 1px solid #ede4e4;
+        }
+        .card-header h3 { 
+            margin: 0; 
+            font-size: 18px; 
+            display: flex; 
+            align-items: center;
+        }
+        .card-header h3 i { 
+            margin-right: 10px; 
+            font-size: 1.2em; 
+        }
+        
+        .card-content {
+             padding: 25px;
+             max-height: 300px; /* Controlled height for list views */
+             overflow-y: auto;
+        }
+        
+        /* Small Stat Cards */
+        .dashboard-card p { font-size: 32px; font-weight: 700; color: var(--text-dark); margin: 0; }
+        .dashboard-card .card-content { text-align: center; }
+        .dashboard-card.stat-card .card-header { background-color: var(--primary-color); color: white; border-bottom: none;}
+        .dashboard-card.stat-card:hover { box-shadow: 0 15px 35px rgba(44, 62, 80, 0.4); }
+        .dashboard-card.stat-card { border-top-color: var(--primary-color); }
+        
+        /* --- 4. List Containers (Attractive Data Display) --- */
+        .list-entry {
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 12px 0; 
+            border-bottom: 1px dashed #ddd; /* Dashed separator for better look */
+        }
+        .list-entry:last-child { border-bottom: none; }
+        
+        /* Company List */
+        .company-name-link {
+            cursor: pointer; 
+            text-decoration: none; 
+            color: var(--company-color); 
+            font-weight: 700;
+            transition: color 0.2s;
+        }
+        .company-name-link:hover { color: var(--primary-dark); }
+        .status-active { color: var(--success-color); font-weight: 600; }
+        .order-btn {
+            background-color: var(--warning-color); 
+            color: rgb(242, 231, 231); 
+            border: none; 
+            padding: 6px 12px; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            margin-right: 10px;
+            transition: background-color 0.2s;
+            font-weight: 600;
+        }
+        .order-btn:hover { background-color: #d35400; }
+
+        /* Order List */
+        .order-entry-list {
+            flex-wrap: wrap; 
+            padding: 15px 0;
+        }
+        .order-entry-list .order-info {
+            flex: 1 1 50%; 
+            display: flex;
+            flex-direction: column;
+        }
+        .order-entry-list .order-title {
+            font-weight: 700;
+            color: var(--warning-color); 
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+        }
+        .order-entry-list .order-title i { margin-right: 8px; color: var(--warning-color); }
+        .order-entry-list .company-user-info {
+            font-size: 14px;
+            color: var(--text-dark);
+            margin-top: 5px;
+        }
+        .order-entry-list .company-user-info strong { color: var(--primary-dark); }
+        .order-entry-list .employee-role { color: var(--employee-color); font-weight: 700; margin-left: 5px; }
+        .order-entry-list .order-meta {
+            flex: 1 1 45%; 
+            text-align: right;
+            font-size: 14px;
+            color: #555;
+            font-weight: 600;
+        }
+        .order-entry-list .order-meta span { color: var(--vendor-color); font-style: italic; }
+
+        /* Dish List */
+        .dish-entry .dish-title { font-weight: 700; color: var(--success-color); font-size: 1.1em;}
+        .dish-entry .dish-meta { font-size: 13px; color: #777; margin-top: 5px;}
+        .dish-entry .dish-meta i { margin-right: 4px; }
+        .dish-entry .company-tag { 
+            background-color: #daeaee; 
+            color: var(--primary-dark); 
+            padding: 3px 8px; 
+            border-radius: 4px; 
+            font-weight: 600; 
+            margin-left: 10px;
+        }
+        .dish-entry .vendor-tag { 
+            background-color: #fde8e5; 
+            color: var(--vendor-color); 
+            padding: 3px 8px; 
+            border-radius: 4px; 
+            font-weight: 600; 
+            margin-right: 10px;
+        }
+
+        /* --- 5. Modal & Form Attractiveness --- */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0, 0, 0, 0.7); justify-content: center; align-items: center; }
+        .modal-content { 
+            background-color: var(--card-bg); padding: 40px; border-radius: 15px; width: 90%; max-width: 550px; 
+            box-shadow: 0 12px 40px var(--shadow-heavy); position: relative; border-top: 8px solid var(--primary-color); 
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        /* Modal Header Styling */
+        .modal-content h3 { 
+            font-size: 22px; 
+            margin-top: 0; 
+            padding-bottom: 15px; 
+            border-bottom: 1px solid #ddd; 
+            margin-bottom: 25px;
+        }
+        .modal-content h3 i { font-size: 1.3em; }
+
+        /* Input Styling */
+        .modal-content input[type="text"], .modal-content select, .modal-content input[type="date"], .modal-content textarea { 
+            width: 100%; 
+            padding: 12px; 
+            margin-bottom: 20px; 
+            border: 2px solid #ddd; 
+            border-radius: 8px; 
+            box-sizing: border-box; 
+            font-size: 16px; 
+            transition: border-color 0.3s;
+        }
+        .modal-content input:focus, .modal-content select:focus, .modal-content textarea:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+            outline: none;
+        }
+
+        /* General CTA Button Styling */
+        .modal-content button[type="submit"], .modal-content button.create-btn, .modal-content button#addEmployeeBtn {
+            color: white; padding: 15px 30px; border: none; border-radius: 8px; cursor: pointer; 
+            transition: background-color 0.3s, transform 0.2s; font-weight: 700; font-size: 18px; width: 100%; margin-top: 10px;
+        }
+        .modal-content button[type="submit"]:hover, .modal-content button.create-btn:hover, .modal-content button#addEmployeeBtn:hover { transform: translateY(-2px); }
+
+        /* Specific Modal Colors */
+        #companyModal .modal-content { border-top-color: var(--company-color); }
+        #companyModal button[type="submit"] { background-color: var(--company-color); }
+        #companyModal button[type="submit"]:hover { background-color: #16a085; }
+        
+        #vendorModal .modal-content { border-top-color: var(--vendor-color); }
+        #vendorModal button[type="submit"] { background-color: var(--vendor-color); }
+        #vendorModal button[type="submit"]:hover { background-color: #e9cdc9; }
+        
+        #dishModal .modal-content { border-top-color: var(--success-color); max-width: 650px;}
+        #dishModal button[type="submit"] { background-color: var(--success-color); }
+        #dishModal button[type="submit"]:hover { background-color: #27ae60; }
+        
+        #summaryModal .modal-content { border-top-color: var(--warning-color); }
+        
+        #employeeModal .modal-content { border-top-color: var(--employee-color); max-width: 850px; }
+        #employeeModal button[type="submit"] { background-color: var(--employee-color); }
+        #employeeModal button[type="submit"]:hover { background-color: #6c3483; }
+        #employeeModal #addEmployeeBtn { background-color: var(--primary-color); margin-bottom: 25px;}
+        #employeeModal #addEmployeeBtn:hover { background-color: var(--primary-dark); }
+        
+        /* Employee Form Grid */
+        .employee-form-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1.5fr 1fr; 
+            gap: 15px; 
+            align-items: center; 
+        }
+        .employee-entry { 
+            border: 1px solid #ddd; 
+            padding: 15px; 
+            margin-bottom: 15px; 
+            border-radius: 8px; 
+            background-color: #e6cbcb; 
+            position: relative;
+            border-left: 5px solid var(--employee-color);
+        }
+        .remove-employee-btn { 
+            background: var(--error-color); 
+            color: rgb(233, 196, 196); 
+            border: none; 
+            padding: 5px 10px; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            float: right; 
+            margin-bottom: 10px; 
+            font-size: 12px;
+            transition: background-color 0.2s;
+        }
+        
+        /* Dish Order Modal */
+        #dishOrderModal .modal-content { border-top-color: var(--warning-color); max-width: 600px; }
+        .order-section-title { color: var(--primary-dark); font-size: 18px; margin-top: 25px; padding-bottom: 5px; border-bottom: 2px solid #eee; font-weight: 600;}
+        #dishOrderModal button[type="submit"] { background-color: var(--success-color); }
+        #dishOrderModal button[type="submit"]:hover { background-color: #27ae60; }
+        
+        /* Custom Alert/Toast Styles */
+        #customAlert {
+            visibility: hidden; min-width: 250px; color: white; text-align: center; 
+            border-radius: 8px; padding: 16px; position: fixed; z-index: 10001; left: 50%; top: 30px;
+            transform: translateX(-50%); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            font-size: 16px; opacity: 0; transition: opacity 0.3s, top 0.3s;
+            font-weight: 600;
+        }
+        #customAlert.show { visibility: visible; opacity: 1; top: 50px; }
+        #customAlert.success { background-color: var(--success-color); }
+        #customAlert.error { background-color: var(--error-color); }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
-    
-    <div class="dashboard-wrapper">
-        <aside class="sidebar">
-            <div class="logo"><h2>Wopla Admin</h2></div>
-            <nav class="nav-links">
-                <ul>
-                    <li class="active"><a href="#"><i class="fas fa-chart-bar"></i> Dashboard</a></li>
-                    
-                    <li class="nav-title">Service Management</li>
-                    <li><a href="#"><i class="fas fa-utensils"></i> Lunch Kiosk</a></li>
-                    <li><a href="#"><i class="fas fa-home"></i> Home Order</a></li>
-                    <li><a href="#"><i class="fas fa-apple-alt"></i> Fruit Order</a></li>
-                    
-                    <li class="nav-title">User & Admin Management</li>
-                    <li><a href="client_management.html"><i class="fas fa-user-tie"></i> Client Admin</a></li> 
-                    <li><a href="vendors.html"><i class="fas fa-truck"></i> Vendor</a></li>
-                    
-                    <li class="nav-title">System</li>
-                    <li><a href="#"><i class="fas fa-chart-line"></i> Reports & Analytics</a></li>
-                    <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
-                    
-                    <li class="logout"><a href="login.html"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-                </ul>
-            </nav>
-        </aside>
 
-        <div class="main-content">
+    <aside class="sidebar">
+        <h3><i class="fas fa-tools"></i> Admin Panel</h3>
+        <nav>
+            <a href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a href="#" id="openSummaryModalLink"><i class="fas fa-utensils"></i> Lunch Kiosk Summary</a>
+            <a href="#" id="openVendorModalLink"><i class="fas fa-truck"></i> Create Vendor</a>
+            <a href="#" id="openModalLink"><i class="fas fa-plus-circle"></i> Create Company</a>
+            <a href="#ordersListView"><i class="fas fa-list-ol"></i> View Orders</a>
+            <a href="#companyListView"><i class="fas fa-eye"></i> View Companies</a>
+            <a href="#vendorListView"><i class="fas fa-boxes"></i> View Vendors</a>
+            <a href="client_admin.html" id="clientAdminLink" style="background-color: var(--employee-color); color: white;"><i class="fas fa-user-shield"></i> Client Admin Management</a> 
+            <a href="#"><i class="fas fa-users"></i> User Management</a>
+            <a href="#"><i class="fas fa-building"></i> Client Setup</a>
+            <a href="#"><i class="fas fa-chart-line"></i> Reports</a>
+            <a href="#"><i class="fas fa-cogs"></i> Settings</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        
+        <header class="header">
+            <h1><i class="fas fa-user-shield" style="margin-right: 10px;"></i> Welcome, Super Admin</h1>
+            <div>
+                <button class="create-btn" id="openSummaryModalBtn" style="background-color: var(--warning-color); margin-right: 15px; padding: 10px 15px;">
+                    <i class="fas fa-chart-pie"></i> Kiosk Summary
+                </button>
+                <button class="create-btn" id="openVendorModalBtn" style="background-color: var(--vendor-color); margin-right: 15px; padding: 10px 15px;">
+                    <i class="fas fa-plus"></i> Add Vendor
+                </button>
+                <button class="create-btn" id="openModalBtn" style="background-color: var(--company-color); padding: 10px 15px;">
+                    <i class="fas fa-plus"></i> Create Company
+                </button>
+                <a href="login.html" style="color:white; text-decoration:none; margin-left: 20px;"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </header>
+
+        <section class="dashboard-grid">
+
+            <div id="ordersListView" class="dashboard-card">
+                <div class="card-header" style="background-color: #e8c792;">
+                    <h3 style="color: var(--warning-color);"><i class="fas fa-list-ol"></i> Saved Lunch Kiosk Orders</h3>
+                </div>
+                <div class="card-content">
+                    <div id="orders-list"></div>
+                </div>
+            </div>
+
+            <div id="companyListView" class="dashboard-card">
+                <div class="card-header" style="background-color: #8da7a4;">
+                    <h3 style="color: var(--company-color);"><i class="fas fa-list-alt"></i> Client Companies List (<span style="font-size: 14px; font-weight: 500;">Click Name for Employee Setup</span>)</h3>
+                </div>
+                <div class="card-content">
+                    <div id="company-list"></div>
+                </div>
+            </div>
+
+            <div id="vendorListView" class="dashboard-card">
+                <div class="card-header" style="background-color: #fbecec;">
+                    <h3 style="color: var(--vendor-color);"><i class="fas fa-truck"></i> Registered Vendors List</h3>
+                </div>
+                <div class="card-content">
+                    <div id="vendor-list"></div>
+                </div>
+            </div>
             
-            <header class="topbar">
-                <div class="page-title"><h1>Super Admin Dashboard <i class="fas fa-chart-bar"></i></h1></div>
-                <div class="admin-info">Welcome, Super Admin! <i class="fas fa-bell"></i></div>
-            </header>
+            <div id="dishListView" class="dashboard-card">
+                <div class="card-header" style="background-color: #ebfaed;">
+                    <h3 style="color: var(--success-color);"><i class="fas fa-list-ul"></i> Active Kiosk Dishes & Assignments</h3>
+                </div>
+                <div class="card-content">
+                    <div id="dish-list"></div>
+                </div>
+            </div>
+            
+            <div class="dashboard-card stat-card" style="border-top-color: var(--primary-color);">
+                <div class="card-header" style="background-color: var(--primary-color); color: white;"><h3><i class="fas fa-users"></i> Total Clients</h3></div>
+                <div class="card-content"><p>128</p></div>
+            </div>
+            <div class="dashboard-card stat-card" style="border-top-color: var(--employee-color);">
+                <div class="card-header" style="background-color: var(--employee-color); color: white;"><h3><i class="fas fa-user-shield"></i> Total Client Admins</h3></div>
+                <div class="card-content"><p>15</p></div>
+            </div>
+            <div class="dashboard-card stat-card" style="border-top-color: var(--warning-color);">
+                <div class="card-header" style="background-color: var(--warning-color); color: white;"><h3><i class="fas fa-utensils"></i> Orders Today</h3></div>
+                <div class="card-content"><p>85</p></div>
+            </div>
+            <div class="dashboard-card stat-card" style="border-top-color: var(--vendor-color);">
+                <div class="card-header" style="background-color: var(--vendor-color); color: white;"><h3><i class="fas fa-truck-loading"></i> Active Vendors</h3></div>
+                <div class="card-content"><p>25</p></div>
+            </div>
 
-            <main class="page-container">
-                <div class="dashboard-header">
-                    <h1>Welcome to Wopla Super Admin Panel</h1>
-                    <p style="color: var(--grey-text);">Use the sidebar to manage clients, vendors, and services.</p>
-                </div>
-                
-                <div style="display: flex; gap: 20px;">
-                    <div class="action-box" onclick="location.href='client_management.html'" style="flex: 1;">
-                        <h3>Client Admin Management</h3>
-                        <p style="color: var(--grey-text);">Add, modify, or deactivate client portals.</p>
-                    </div>
-                    <div class="action-box" onclick="location.href='vendors.html'" style="flex: 1;">
-                        <h3>Vendor Management</h3>
-                        <p style="color: var(--grey-text);">Manage service providers and their access.</p>
-                    </div>
-                </div>
+        </section>
+    </main>
 
-                <div class="stats-box" style="margin-top: 30px;">
-                    <h3>System Overview</h3>
-                    <p style="font-size: 36px; font-weight: 700; color: var(--primary-color);">520 Total Users</p>
-                </div>
-                <li><a href="lunch_kiosk.html"><i class="fas fa-utensils"></i> Lunch Kiosk</a></li>
-            </main>
+    <div id="companyModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn company-close-btn">&times;</span>
+            <h3 style="color: var(--company-color);"><i class="fas fa-building" style="margin-right: 10px;"></i> Add New Client Company</h3>
+            <form id="createCompanyForm">
+                <label for="companyName" style="font-weight: 600; display: block; margin-bottom: 8px;">Company Name:</label>
+                <input type="text" id="companyName" placeholder="Enter Company Name (e.g., Global Solutions)" required>
+
+                <label for="companyEmail" style="font-weight: 600; display: block; margin-bottom: 8px;">Contact Email:</label>
+                <input type="text" id="companyEmail" placeholder="Enter Primary Contact Email" required>
+
+                <button type="submit"><i class="fas fa-save"></i> **Save Company**</button>
+            </form>
         </div>
     </div>
+    
+    <div id="vendorModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn vendor-close-btn">&times;</span>
+            <h3 style="color: var(--vendor-color);"><i class="fas fa-truck" style="margin-right: 10px;"></i> Add New Food Vendor</h3>
+            <form id="createVendorForm">
+                <label for="vendorName" style="font-weight: 600; display: block; margin-bottom: 8px;">Vendor Name:</label>
+                <input type="text" id="vendorName" placeholder="Enter Vendor Name (e.g., Karachi Kitchen)" required>
+
+                <label for="vendorContact" style="font-weight: 600; display: block; margin-bottom: 8px;">Contact Email/Phone:</label>
+                <input type="text" id="vendorContact" placeholder="Enter Primary Contact Email" required>
+
+                <button type="submit"><i class="fas fa-save"></i> **Save Vendor**</button>
+            </form>
+        </div>
+    </div>
+    
+    <div id="dishModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn dish-close-btn">&times;</span>
+            <h3 style="color: var(--success-color);"><i class="fas fa-utensils" style="margin-right: 10px;"></i> Add New Kiosk Dish</h3>
+            <form id="createDishForm">
+                <label for="dishName" style="font-weight: 600; display: block; margin-bottom: 8px;">Dish Name (Signature Dish):</label>
+                <input type="text" id="dishName" placeholder="e.g., Chicken Karahi with Roti" required>
+
+                <label for="dishVendor" style="font-weight: 600; display: block; margin-bottom: 8px;">Select Vendor:</label>
+                <select id="dishVendor" required>
+                    <option value="" disabled selected>Select a vendor</option>
+                </select>
+
+                <label for="dishCompany" style="font-weight: 600; display: block; margin-bottom: 8px;">Assign to Company (Optional):</label>
+                <select id="dishCompany">
+                    <option value="" selected>All Companies (Default)</option>
+                </select>
+
+                <button type="submit"><i class="fas fa-plus"></i> **Add Dish**</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="employeeModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn employee-close-btn">&times;</span>
+            <h3 id="employeeModalTitle" style="color: var(--employee-color);"><i class="fas fa-users" style="margin-right: 10px;"></i> Manage Employees for: [Company Name]</h3>
+            
+            <form id="createEmployeeForm">
+                <button type="button" id="addEmployeeBtn"><i class="fas fa-user-plus"></i> Add New Employee Field</button>
+                
+                <div id="employeeFieldsContainer">
+                    </div>
+                
+                <button type="submit" style="background-color: var(--employee-color);"><i class="fas fa-save"></i> **Save All Employees**</button>
+            </form>
+        </div>
+    </div>
+    
+    <div id="dishOrderModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn order-close-btn">&times;</span>
+            <h3 id="orderModalTitle" style="color: var(--warning-color);"><i class="fas fa-utensils" style="margin-right: 10px;"></i> Assign Dish for: [Company Name]</h3>
+            
+            <div class="order-section-title">1. Select Employee</div>
+            <div id="employeeSelectionArea" style="margin-bottom: 25px; padding-bottom: 15px;">
+                <label for="selectEmployee" style="font-weight: 600; display: block; margin-bottom: 8px;">Employee for Order:</label>
+                <select id="selectEmployee" required>
+                    </select>
+            </div>
+
+            <div class="order-section-title">2. Order Details</div>
+            <form id="assignDishForm">
+                <label for="orderDate" style="display: block; margin-weight: 600; margin-bottom: 8px;">Delivery Date:</label>
+                <input type="date" id="orderDate" required style="margin-bottom: 15px;">
+                
+                <label for="assignDishSelect" style="display: block; font-weight: 600; margin-bottom: 8px;">Choose Dish:</label>
+                <select id="assignDishSelect" required style="width: 100%; padding: 15px; margin-bottom: 15px;">
+                    <option value="" disabled selected>Select an available dish</option>
+                    </select>
+                
+                <label for="orderNotes" style="display: block; font-weight: 600; margin-bottom: 8px;">Additional Notes (Optional):</label>
+                <textarea id="orderNotes" placeholder="e.g., extra sauce, no onions, etc." style="margin-bottom: 25px;"></textarea>
+                
+                <button type="submit" style="width: 100%; padding: 15px 0; margin: 0; background-color: var(--success-color);"><i class="fas fa-plus"></i> **Add Order**</button>
+            </form>
+            
+        </div>
+    </div>
+    
+    <div id="summaryModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn summary-close-btn">&times;</span>
+            <h3 style="color: var(--warning-color);"><i class="fas fa-chart-bar" style="margin-right: 10px;"></i> Today's Lunch Kiosk Summary</h3>
+            
+            <div id="summary-stats" style="padding: 20px; background-color: #f7f9fa; border-radius: 8px; text-align: center;">
+                <h4 style="color: var(--warning-color); margin: 0 0 10px 0;">Total Orders: <span style="font-size: 2em; font-weight: 700; color: var(--warning-color);">85</span></h4>
+                <p style="color: var(--success-color); font-weight: 600;">Active Dishes: <span style="font-weight: 700;">12</span> | Vendors Participating: <span style="font-weight: 700;">5</span></p>
+                <p style="color: var(--employee-color); font-weight: 600;">Client Admins with Orders: <span style="font-weight: 700;">3</span></p>
+            </div>
+
+            <button id="goToDishAddBtn" class="create-btn" style="background-color: var(--success-color); width: 100%; margin-top: 25px; padding: 15px 0;">
+                <i class="fas fa-plus"></i> Go to Dish Management / Add New Dish
+            </button>
+        </div>
+    </div>
+    
+    <div id="customAlert"></div>
+
+    <script>
+        // --- Data Persistence (using localStorage) ---
+        let companies = [];
+        try {
+            const data = JSON.parse(localStorage.getItem('savedCompanies'));
+            if (Array.isArray(data)) {
+                companies = data;
+            } else if (data && typeof data === 'object') {
+                companies = [data]; 
+            }
+        } catch (e) {
+            console.warn("Local Storage 'savedCompanies' corrupt, resetting.");
+            companies = [];
+        }
+
+        let vendors = JSON.parse(localStorage.getItem('savedVendors')) || [];
+        let dishes = JSON.parse(localStorage.getItem('savedDishes')) || [];
+        let orders = JSON.parse(localStorage.getItem('savedOrders')) || []; 
+
+        // Add initial dummy data if lists are empty (helps with first run/visibility check)
+        if (companies.length === 0) {
+            companies.push({ 
+                id: 1, 
+                name: 'Alpha Corp', 
+                email: 'alpha@corp.com', 
+                date: '01:00 PM | Jan 1, 2025', 
+                status: 'Active', 
+                employees: [
+                    { name: 'Ali Khan', contact: 'ali.khan@alpha.com', role: 'Client Admin' },
+                    { name: 'Sarah Ahmed', contact: 'sarah.ahmed@alpha.com', role: 'Employee' }
+                ] 
+            });
+            companies.push({ 
+                id: 2, 
+                name: 'Beta Solutions', 
+                email: 'beta@corp.com', 
+                date: '02:00 PM | Jan 2, 2025', 
+                status: 'Active', 
+                employees: [
+                    { name: 'Fatima Zafar', contact: 'fatima@beta.com', role: 'Client Admin' }
+                ] 
+            });
+            localStorage.setItem('savedCompanies', JSON.stringify(companies));
+        }
+        if (vendors.length === 0) {
+            vendors.push({ id: 10, name: 'Karachi Kitchen', contact: 'kk@contact.com', date: '03:00 PM | Mar 1, 2024', status: 'Active' });
+            localStorage.setItem('savedVendors', JSON.stringify(vendors));
+        }
+        if (dishes.length === 0) {
+            dishes.push({ id: 101, name: 'Mutton Biryani', vendor: 'Karachi Kitchen', company: 'Alpha Corp' });
+            dishes.push({ id: 102, name: 'Chicken Karahi', vendor: 'Karachi Kitchen', company: 'Beta Solutions' });
+            localStorage.setItem('savedDishes', JSON.stringify(dishes));
+        }
+
+
+        // --- Element References ---
+        const summaryModal = document.getElementById('summaryModal');
+        const companyModal = document.getElementById('companyModal');
+        const vendorModal = document.getElementById('vendorModal');
+        const dishModal = document.getElementById('dishModal');
+        const employeeModal = document.getElementById('employeeModal'); 
+        
+        // ORDER MODAL ELEMENTS
+        const dishOrderModal = document.getElementById('dishOrderModal');
+        const assignDishForm = document.getElementById('assignDishForm');
+        const selectEmployee = document.getElementById('selectEmployee'); 
+        const assignDishSelect = document.getElementById('assignDishSelect');
+        const orderDateInput = document.getElementById('orderDate'); 
+        const orderNotesInput = document.getElementById('orderNotes'); 
+        
+        const companyForm = document.getElementById('createCompanyForm');
+        const vendorForm = document.getElementById('createVendorForm');
+        const dishForm = document.getElementById('createDishForm');
+        const employeeForm = document.getElementById('createEmployeeForm'); 
+        
+        const companyList = document.getElementById('company-list');
+        const vendorList = document.getElementById('vendor-list');
+        const dishList = document.getElementById('dish-list');
+        const ordersList = document.getElementById('orders-list'); 
+        const dishCompanySelect = document.getElementById('dishCompany');
+        const dishVendorSelect = document.getElementById('dishVendor');
+        const employeeFieldsContainer = document.getElementById('employeeFieldsContainer');
+        
+        const customAlert = document.getElementById('customAlert');
+        const clientAdminLink = document.getElementById('clientAdminLink');
+
+        let currentCompanyId = null; 
+        let employeeCounter = 0; 
+
+        // --- Helper Functions ---
+        
+        function showAlert(message, type) {
+            console.log("ALERT:", message, type); 
+            customAlert.textContent = message;
+            customAlert.className = 'show ' + type;
+            setTimeout(function(){ 
+                customAlert.className = customAlert.className.replace('show', ''); 
+            }, 3000);
+        }
+
+        function isContactUnique(contact) {
+            const lowerContact = contact.toLowerCase();
+            if (companies.some(c => c.email.toLowerCase() === lowerContact)) return false;
+            if (vendors.some(v => v.contact.toLowerCase() === lowerContact)) return false;
+            for (const company of companies) {
+                const employeeContacts = company.employees.map(e => e.contact.toLowerCase());
+                if (employeeContacts.includes(lowerContact)) return false;
+            }
+            return true;
+        }
+        
+        function isValidCompanyName(name) {
+            return name.trim().length > 1; 
+        }
+        
+        function isValidEmail(email) {
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailPattern.test(email);
+        }
+
+        function openModal(modalEl) { 
+            modalEl.style.display = 'flex'; 
+            document.body.style.overflow = 'hidden'; 
+        }
+        function closeModal(modalEl, formEl = { reset: () => {} }) { 
+            modalEl.style.display = 'none'; 
+            document.body.style.overflow = ''; 
+            if (modalEl.id !== 'employeeModal') {
+                formEl.reset(); 
+            }
+        }
+        
+        function getCompanyById(id) {
+            return companies.find(c => c.id === id);
+        }
+        
+        function getEmployeeDetails(companyId, contact) {
+            const company = getCompanyById(companyId);
+            if (company && company.employees) {
+                return company.employees.find(emp => emp.contact === contact);
+            }
+            return null;
+        }
+
+        function saveOrders() {
+            localStorage.setItem('savedOrders', JSON.stringify(orders));
+        }
+
+        function formatDateKey(dateObj) {
+            const y = dateObj.getFullYear();
+            const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const d = String(dateObj.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+        
+        function getOrderDate() {
+            return orderDateInput.value;
+        }
+
+
+        // Employee Management Functions (Same as before)
+        function renderEmployeeEntry(employee = { name: '', contact: '', role: '' }) {
+            employeeCounter++;
+            const entry = document.createElement('div');
+            entry.classList.add('employee-entry');
+            entry.setAttribute('data-id', employeeCounter);
+            
+            entry.innerHTML = `
+                <div class="employee-entry-controls">
+                    <button type="button" class="remove-employee-btn" data-id="${employeeCounter}">Remove</button>
+                </div>
+                <div class="employee-form-grid">
+                    <div class="field-group">
+                        <label for="emp-name-${employeeCounter}">Name:</label>
+                        <input type="text" id="emp-name-${employeeCounter}" value="${employee.name}" placeholder="Name" required>
+                    </div>
+                    
+                    <div class="field-group">
+                        <label for="emp-contact-${employeeCounter}">Contact (Email):</label>
+                        <input type="text" id="emp-contact-${employeeCounter}" value="${employee.contact}" placeholder="Email" required>
+                    </div>
+                    
+                    <div class="field-group">
+                        <label for="emp-role-${employeeCounter}">Role:</label>
+                        <select id="emp-role-${employeeCounter}" required>
+                            <option value="" ${employee.role === '' ? 'selected' : ''} disabled>Select Role</option>
+                            <option value="Client Admin" ${employee.role === 'Client Admin' ? 'selected' : ''}>Client Admin</option>
+                            <option value="Employee" ${employee.role === 'Employee' ? 'selected' : ''}>Employee</option>
+                        </select>
+                    </div>
+                </div>
+            `;
+            employeeFieldsContainer.appendChild(entry);
+            
+            entry.querySelector('.remove-employee-btn').addEventListener('click', function() {
+                entry.remove();
+                if (employeeFieldsContainer.children.length === 0) {
+                    addEmployeeEntry(); 
+                }
+            });
+        }
+        
+        function addEmployeeEntry() {
+            renderEmployeeEntry();
+        }
+
+        function populateEmployeeModal(companyId) {
+            const company = getCompanyById(companyId);
+            if (!company) return;
+
+            currentCompanyId = companyId;
+            document.getElementById('employeeModalTitle').innerHTML = `<i class="fas fa-users" style="margin-right: 10px;"></i> Manage Employees for: **${company.name}**`;
+            employeeFieldsContainer.innerHTML = '';
+            employeeCounter = 0;
+
+            if (company.employees && company.employees.length > 0) {
+                company.employees.forEach(emp => renderEmployeeEntry(emp));
+            } else {
+                addEmployeeEntry(); 
+            }
+
+            openModal(employeeModal);
+        }
+        
+        // Dish Order/Count Functions (Same as before)
+        function populateDishOrderModal(companyId) {
+            const company = getCompanyById(companyId);
+            if (!company) return;
+
+            currentCompanyId = companyId; 
+            document.getElementById('orderModalTitle').innerHTML = `<i class="fas fa-utensils" style="margin-right: 10px;"></i> Assign Dish for: **${company.name}**`;
+
+            const today = new Date();
+            const todayKey = formatDateKey(today);
+            orderDateInput.value = todayKey;
+            
+            selectEmployee.innerHTML = `<option value="" disabled selected>Select Employee</option>`;
+            
+            if (!company.employees || company.employees.length === 0) {
+                 const option = document.createElement('option');
+                 option.value = "";
+                 option.textContent = "--- No Employees Found (Add via Company Name) ---";
+                 selectEmployee.appendChild(option);
+            } else {
+                 company.employees.forEach(emp => {
+                    const option = document.createElement('option');
+                    option.value = JSON.stringify({ name: emp.name, contact: emp.contact, role: emp.role }); 
+                    option.textContent = `${emp.name} - ${emp.role}`;
+                    selectEmployee.appendChild(option);
+                 });
+            }
+
+            assignDishSelect.innerHTML = `<option value="" disabled selected>Select an available dish</option>`;
+            dishes.forEach(dish => {
+                const option = document.createElement('option');
+                option.value = dish.name;
+                option.textContent = `${dish.name} (by ${dish.vendor})`;
+                assignDishSelect.appendChild(option);
+            });
+
+            openModal(dishOrderModal);
+        }
+        
+        // --- Render Functions (Same as before) ---
+        
+        function updateDropdowns() {
+            dishCompanySelect.innerHTML = '<option value="" selected>All Companies (Default)</option>';
+            companies.forEach(company => {
+                const option = document.createElement('option');
+                option.value = company.name;
+                option.textContent = company.name;
+                dishCompanySelect.appendChild(option);
+            });
+
+            dishVendorSelect.innerHTML = '<option value="" disabled selected>Select a vendor</option>';
+            vendors.forEach(vendor => {
+                const option = document.createElement('option');
+                option.value = vendor.name;
+                option.textContent = vendor.name;
+                dishVendorSelect.appendChild(option);
+            });
+        }
+        
+        function renderVendors() {
+            vendorList.innerHTML = ''; 
+            if (vendors.length === 0) {
+                vendorList.innerHTML = '<p style="text-align: center; color: #888; margin-top: 50px; font-size: 16px;">No vendors added yet. Add one above!</p>';
+                updateDropdowns(); 
+                return;
+            }
+
+            [...vendors].reverse().forEach(vendor => {
+                const entry = document.createElement('div');
+                entry.classList.add('list-entry');
+                entry.innerHTML = `
+                    <div>
+                        <i class="fas fa-truck" style="color:var(--vendor-color); margin-right: 8px;"></i>
+                        <span style="font-weight: 700; color: var(--text-dark);">${vendor.name}</span>
+                        <span style="font-size: 12px; color: #888; margin-left: 15px;">Contact: ${vendor.contact}</span>
+                    </div>
+                    <div style="text-align: right;">
+                        <span class="${vendor.status === 'Active' ? 'status-active' : 'status-inactive'}">
+                            <i class="fas fa-circle" style="font-size: 8px; margin-right: 5px;"></i>${vendor.status}
+                        </span>
+                    </div>
+                `;
+                vendorList.appendChild(entry);
+            });
+            updateDropdowns();
+        }
+
+        function renderCompanies() {
+            companyList.innerHTML = ''; 
+            if (companies.length === 0) {
+                companyList.innerHTML = '<p style="text-align: center; color: #888; margin-top: 50px; font-size: 16px;">No companies saved yet. Create one above!</p>';
+                updateDropdowns(); 
+                return;
+            }
+
+            [...companies].reverse().forEach(company => {
+                const entry = document.createElement('div');
+                entry.classList.add('list-entry');
+                
+                entry.innerHTML = `
+                    <div>
+                        <i class="fas fa-building" style="color:var(--company-color); margin-right: 8px;"></i>
+                        <span class="company-name-link" data-company-id="${company.id}">${company.name}</span>
+                        <span style="font-size: 12px; color: #888; margin-left: 15px;">Email: ${company.email}</span>
+                        <span style="font-size: 12px; color: var(--employee-color); margin-left: 15px; font-weight: 600;">(${company.employees ? company.employees.length : 0} Users)</span>
+                    </div>
+                    <div style="text-align: right;">
+                        <button class="order-btn" data-company-id="${company.id}">
+                             <i class="fas fa-utensils"></i> Order
+                        </button>
+                        <span class="${company.status === 'Active' ? 'status-active' : 'status-inactive'}" style="margin-left: 10px;">
+                            <i class="fas fa-circle" style="font-size: 8px; margin-right: 5px;"></i>${company.status}
+                        </span>
+                    </div>
+                `;
+                companyList.appendChild(entry);
+            });
+            
+            document.querySelectorAll('.company-name-link').forEach(link => {
+                link.addEventListener('click', function() {
+                    const companyId = parseInt(this.getAttribute('data-company-id'));
+                    populateEmployeeModal(companyId); 
+                });
+            });
+            
+            document.querySelectorAll('.order-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const companyId = parseInt(this.getAttribute('data-company-id'));
+                    populateDishOrderModal(companyId); 
+                });
+            });
+
+            updateDropdowns();
+        }
+
+        function renderDishes() {
+            dishList.innerHTML = '';
+            if (dishes.length === 0) {
+                dishList.innerHTML = '<p style="text-align: center; color: #888; margin-top: 50px; font-size: 16px;">No dishes added yet. Use the \'Kiosk Summary\' button!</p>';
+                return;
+            }
+
+            [...dishes].reverse().forEach(dish => {
+                const entry = document.createElement('div');
+                entry.classList.add('list-entry', 'dish-entry');
+                entry.innerHTML = `
+                    <div class="dish-entry-details">
+                        <div class="dish-title"><i class="fas fa-drumstick-bite" style="color: var(--success-color);"></i> ${dish.name}</div>
+                        <div class="dish-meta">
+                            <span class="vendor-tag"><i class="fas fa-truck"></i> ${dish.vendor}</span>
+                            <span class="company-tag"><i class="fas fa-building"></i> ${dish.company}</span>
+                        </div>
+                    </div>
+                    <span style="font-size: 14px; font-weight: 600; color: var(--success-color);"><i class="fas fa-check-circle"></i> Active</span>
+                `;
+                dishList.appendChild(entry);
+            });
+        }
+        
+        // Render Orders Function (Same as before)
+        function renderOrders() {
+            ordersList.innerHTML = '';
+            if (orders.length === 0) {
+                ordersList.innerHTML = '<p style="text-align: center; color: #888; margin-top: 50px; font-size: 16px;">No orders have been placed yet.</p>';
+                return;
+            }
+            
+            const sortedOrders = [...orders].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            sortedOrders.forEach(order => {
+                
+                const employeeDetail = getEmployeeDetails(order.companyId, order.employeeContact);
+                const employeeRole = employeeDetail ? employeeDetail.role : order.employeeRole || 'N/A';
+                
+                const dateParts = order.date.split('-'); 
+                const readableDate = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`; 
+
+                const entry = document.createElement('div');
+                entry.classList.add('list-entry', 'order-entry-list');
+                
+                entry.innerHTML = `
+                    <div class="order-info">
+                        <div class="order-title"><i class="fas fa-circle"></i> ${order.dishName}</div>
+                        <div class="company-user-info">
+                            <strong>${order.companyName}</strong> | 
+                            Employee: **${order.employeeName}** <span class="employee-role">(${employeeRole})</span>
+                        </div>
+                    </div>
+                    <div class="order-meta">
+                        Delivery Date: <span style="font-weight: 700; color: var(--text-dark);">${readableDate}</span>
+                        ${order.notes ? `<br><span style="color: var(--error-color); font-style: italic;">Note: ${order.notes}</span>` : ''}
+                    </div>
+                `;
+                ordersList.appendChild(entry);
+            });
+        }
+
+
+        // --- Event Listeners (Form Submissions - Same as before) ---
+
+        // Company Form Submission
+        companyForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const name = document.getElementById('companyName').value.trim();
+            const email = document.getElementById('companyEmail').value.trim();
+            
+            if (name.length < 2 || email.length < 5) {
+                 showAlert(`Error: Please fill both fields completely. Company name must be at least 2 chars.`, 'error');
+                 return;
+            }
+            if (!isValidCompanyName(name)) {
+                showAlert(`Error: Company Name is invalid.`, 'error');
+                return;
+            }
+            if (!isValidEmail(email)) {
+                showAlert(`Error: Please enter a valid email address format.`, 'error');
+                return;
+            }
+            if (!isContactUnique(email)) {
+                showAlert(`Error: Email ID "${email}" is already in use by another entity.`, 'error');
+                return;
+            }
+
+            const now = new Date();
+            const newCompany = { 
+                id: Date.now(), 
+                name: name, 
+                email: email, 
+                date: now.toLocaleString(), 
+                status: 'Active', 
+                employees: [] 
+            };
+            companies.push(newCompany);
+            localStorage.setItem('savedCompanies', JSON.stringify(companies));
+            
+            renderCompanies(); 
+            closeModal(companyModal, companyForm);
+            showAlert(`Company "${name}" successfully created!`, 'success');
+        });
+
+        // Vendor Form Submission
+        vendorForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const name = document.getElementById('vendorName').value.trim();
+            const contact = document.getElementById('vendorContact').value.trim(); 
+            
+             if (!name || contact.length < 5) {
+                showAlert('Error: Vendor name and contact are required.', 'error');
+                return;
+            }
+            if (!isContactUnique(contact)) {
+                showAlert(`Error: Contact/Email ID "${contact}" is already in use.`, 'error');
+                return;
+            }
+
+            const now = new Date();
+            const newVendor = { id: Date.now(), name: name, contact: contact, date: now.toLocaleString(), status: 'Active' };
+            vendors.push(newVendor);
+            localStorage.setItem('savedVendors', JSON.stringify(vendors));
+
+            renderVendors(); 
+            closeModal(vendorModal, vendorForm);
+            showAlert(`Vendor "${name}" successfully registered!`, 'success');
+        });
+
+        // Dish Form Submission
+        dishForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const dishName = document.getElementById('dishName').value.trim();
+            const dishVendor = document.getElementById('dishVendor').value.trim();
+            const dishCompany = document.getElementById('dishCompany').value || 'All Companies'; 
+            
+            if (!dishName || !dishVendor) {
+                showAlert('Error: Dish Name and Vendor selection are required.', 'error');
+                return;
+            }
+
+
+            const newDish = { id: Date.now(), name: dishName, vendor: dishVendor, company: dishCompany };
+            dishes.push(newDish);
+            localStorage.setItem('savedDishes', JSON.stringify(dishes));
+
+            renderDishes(); 
+            closeModal(dishModal, dishForm);
+            showAlert(`Dish "${dishName}" successfully added to Kiosk!`, 'success');
+        });
+        
+        // Employee Form Submission
+        employeeForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const company = getCompanyById(currentCompanyId);
+            if (!company) {
+                showAlert('Error: Company not found.', 'error');
+                return;
+            }
+
+            const newEmployees = [];
+            const formEntries = employeeFieldsContainer.querySelectorAll('.employee-entry');
+            let hasError = false;
+            const uniqueContactsCheck = new Set();
+            
+            if (formEntries.length === 0) {
+                 showAlert('Error: Please add at least one employee entry.', 'error');
+                 return;
+            }
+
+
+            for (let i = 0; i < formEntries.length; i++) {
+                const entry = formEntries[i];
+                const name = entry.querySelector('input[id^="emp-name-"]').value.trim();
+                const contact = entry.querySelector('input[id^="emp-contact-"]').value.trim();
+                const role = entry.querySelector('select[id^="emp-role-"]').value;
+                const contactLower = contact.toLowerCase();
+
+                if (!name || !contact || !role) {
+                    hasError = true;
+                    showAlert(`Error: Employee entry #${i + 1} has empty fields. All fields are required.`, 'error');
+                    break;
+                }
+                
+                if (!isValidEmail(contact)) {
+                    hasError = true;
+                    showAlert(`Error: Employee contact #${i + 1} must be a valid email.`, 'error');
+                    break;
+                }
+
+                if (uniqueContactsCheck.has(contactLower)) {
+                    hasError = true;
+                    showAlert(`Error: Employee contact "${contact}" is duplicated in this list.`, 'error');
+                    break;
+                }
+                
+                const isExistingEmployee = company.employees.some(e => e.contact.toLowerCase() === contactLower);
+                if (!isExistingEmployee && !isContactUnique(contact)) {
+                    hasError = true;
+                    showAlert(`Error: Contact "${contact}" is already used by another user or entity.`, 'error');
+                    break;
+                }
+                
+                uniqueContactsCheck.add(contactLower);
+                newEmployees.push({ name, contact, role });
+            }
+
+            if (hasError) return;
+
+            company.employees = newEmployees;
+            localStorage.setItem('savedCompanies', JSON.stringify(companies));
+
+            renderCompanies(); 
+            closeModal(employeeModal);
+            showAlert(`${newEmployees.length} users successfully saved for ${company.name}!`, 'success');
+        });
+        
+        // Dish Order Submission Logic
+        assignDishForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const employeeJson = selectEmployee.value; 
+            const dishName = assignDishSelect.value;
+            const orderDate = getOrderDate(); 
+            const orderNotes = orderNotesInput.value.trim(); 
+            
+            if (!employeeJson || employeeJson.includes("Select Employee") || employeeJson.includes("No Employees Found")) {
+                showAlert('Error: Please select an employee.', 'error');
+                return;
+            }
+            if (!orderDate) { 
+                showAlert('Error: Please select a delivery date.', 'error');
+                return;
+            }
+            if (!dishName || dishName.includes("Select an available dish")) {
+                showAlert('Error: Please select a dish.', 'error');
+                return;
+            }
+            
+            const employeeData = JSON.parse(employeeJson);
+            const company = getCompanyById(currentCompanyId);
+
+            if (!company) {
+                showAlert('Error: Company data missing.', 'error');
+                return;
+            }
+
+            const newOrder = {
+                id: Date.now(),
+                date: orderDate, 
+                companyId: currentCompanyId,
+                companyName: company.name,
+                employeeName: employeeData.name,
+                employeeContact: employeeData.contact,
+                employeeRole: employeeData.role, 
+                dishName: dishName,
+                notes: orderNotes 
+            };
+            
+            orders.push(newOrder);
+            saveOrders();
+            
+            renderOrders();
+            
+            orderNotesInput.value = "";
+            
+            showAlert(`Dish "${dishName}" ordered for ${employeeData.name} on ${orderDate}!`, 'success');
+        });
+        
+        // --- Event Listener for Client Admin Link ---
+        clientAdminLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            // Store all data in localStorage before redirecting
+            localStorage.setItem('savedCompanies', JSON.stringify(companies));
+            localStorage.setItem('savedOrders', JSON.stringify(orders));
+            // Redirect to the new page
+            window.location.href = 'client_admin.html';
+        });
+
+        // --- Event Listeners (Modal Open/Close) ---
+        
+        document.getElementById('openSummaryModalBtn').onclick = () => openModal(summaryModal);
+        document.getElementById('openSummaryModalLink').onclick = (e) => { e.preventDefault(); openModal(summaryModal); };
+        document.getElementsByClassName('summary-close-btn')[0].onclick = () => closeModal(summaryModal);
+        document.getElementById('goToDishAddBtn').onclick = () => { closeModal(summaryModal); openModal(dishModal); };
+
+        document.getElementById('openModalBtn').onclick = () => openModal(companyModal);
+        document.getElementById('openModalLink').onclick = (e) => { e.preventDefault(); openModal(companyModal); };
+        document.getElementsByClassName('company-close-btn')[0].onclick = () => closeModal(companyModal, companyForm);
+
+        document.getElementById('openVendorModalBtn').onclick = () => openModal(vendorModal);
+        document.getElementById('openVendorModalLink').onclick = (e) => { e.preventDefault(); openModal(vendorModal); };
+        document.getElementsByClassName('vendor-close-btn')[0].onclick = () => closeModal(vendorModal, vendorForm);
+
+        document.getElementsByClassName('dish-close-btn')[0].onclick = () => closeModal(dishModal, dishForm);
+        document.getElementsByClassName('employee-close-btn')[0].onclick = () => closeModal(employeeModal); 
+        document.getElementsByClassName('order-close-btn')[0].onclick = () => closeModal(dishOrderModal, assignDishForm);
+
+        addEmployeeBtn.addEventListener('click', addEmployeeEntry);
+        
+        window.onclick = function(event) { 
+            if (event.target == companyModal) { closeModal(companyModal, companyForm); }
+            if (event.target == dishModal) { closeModal(dishModal, dishForm); }
+            if (event.target == summaryModal) { closeModal(summaryModal); }
+            if (event.target == vendorModal) { closeModal(vendorModal, vendorForm); }
+            if (event.target == employeeModal) { closeModal(employeeModal); } 
+            if (event.target == dishOrderModal) { closeModal(dishOrderModal, assignDishForm); } 
+        };
+
+        // --- Initialization ---
+        renderVendors();
+        renderCompanies();
+        renderDishes();
+        renderOrders(); 
+    </script>
 </body>
 </html>
