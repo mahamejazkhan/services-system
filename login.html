@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wopla - Company Services System Access</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        /* --- GLOBAL COLOR VARIABLES --- */
+        :root {
+            --primary-color: #3182ce;     /* Primary Blue */
+            --secondary-color: #2d3748;   /* Dark Text */
+            --background-light: #ebc3c3;  /* White */
+            --dark-blue: #2a4365;
+            --grey-text: #718096;
+            --border-light: #92b7e8;
+        }
+
+        /* BASE STYLES */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { 
+            display: flex; 
+            justify-content: right; 
+            align-items: right; 
+            min-height: 100vh; 
+            background-color: #368ce1; 
+            /* BACKGROUND IMAGE: Yaqeen karein ki "images/food_background_blurred.jpg" file maujood hai */
+            background-image: url(company_bg.jpg.png); 
+            background-size: cover;
+            background-position: right;
+        }
+        
+        /* LOGIN CONTAINER/CARD */
+        .login-container {
+            background-color: var(--background-light);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            width: 90%;
+            max-width: 400px;
+            text-align: right;
+        }
+
+        /* HEADER/ICON */
+        .login-header {
+            margin-bottom: 30px;
+        }
+        .login-header i {
+            font-size: 40px;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        .login-header h2 {
+            font-size: 24px;
+            color: var(--secondary-color);
+            margin-bottom: 5px;
+        }
+        .login-header p {
+            font-size: 14px;
+            color: var(--black-text);
+        }
+
+        /* FORM STYLES */
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            /* ** IDs: username aur password yahan se linked hain ** */
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.2s;
+        }
+        .form-control:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+        
+        /* BUTTON */
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-color);
+            color: rgb(71, 66, 66);
+            border: none;
+            border-radius: 6px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .btn-login:hover {
+            background-color: var(--dark-blue);
+        }
+        .btn-login i {
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="login-container">
+        <div class="login-header">
+            <i class="fas fa-briefcase"></i>
+            <h2>Company Services System Access</h2>
+            <p>Please log in to manage internal services.</p>
+        </div>
+        
+        <form **id="loginForm"**>
+            <div class="form-group">
+                <label for="username"><i class="fas fa-user"></i> Employee ID / Username</label>
+                <input type="text" **id="username"** class="form-control" placeholder="Enter username (superadmin)" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password"><i class="fas fa-lock"></i> Password</label>
+                <input type="password" **id="password"** class="form-control" placeholder="Enter password (Wopla@123)" required>
+            </div>
+            
+            <button type="submit" class="btn-login"><i class="fas fa-sign-in-alt"></i> SIGN IN</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault(); 
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            // --- 1. Login Logic (Credentials Check) ---
+            
+            // Super Admin credentials
+            if (username === 'superadmin' && password === 'Wopla@123') {
+                
+                // --- 2. Pop-up Message (Success) ---
+                alert('Login Successful! Redirecting to Super Admin Dashboard.'); 
+                
+                // --- 3. Redirection (Final Link) ---
+                window.location.href = 'super_admin_dashboard.html'; 
+                
+            } 
+            // Client Admin credentials
+            else if (username === 'clientadmin' && password === 'Wopla@123') {
+                alert('Login Successful! Redirecting to Client Management.'); 
+                window.location.href = 'client management.html'; 
+            }
+            else {
+                // --- 2. Pop-up Message (Error) ---
+                alert('Login Failed: Invalid Username or Password. Please try again.');
+            }
+        });
+    </script>
+</body>
+</html>

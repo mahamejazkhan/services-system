@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wopla - Super Admin Dashboard</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        /* CSS styles */
+        :root {
+            --primary-color: #48bb78;     /* Wopla Green */
+            --secondary-color: #2d3748;   /* Dark Text */
+            --background-light: #d4b3b3;  
+            --page-bg: #a1b2ac;           
+            --active-bg: #e6fffa;         
+            --danger-color: #e53e3e;      
+            --grey-text: #718096;
+            --border-light: #e2e8f0;
+            --accent-blue: #3182ce;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--page-bg); min-height: 100vh; }
+        a { text-decoration: none; }
+        .dashboard-wrapper { display: flex; min-height: 100vh; }
+
+        /* Sidebar Styles */
+        .sidebar { width: 250px; background-color: var(--background-light); box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05); position: sticky; top: 0; height: 100vh; }
+        .sidebar .logo { height: 75px; display: flex; justify-content: center; align-items: center; border-bottom: 1px solid var(--border-light); }
+        .sidebar .logo h2 { color: var(--secondary-color); font-size: 20px; font-weight: 700; }
+        .sidebar ul { list-style: none; padding: 0; }
+        .sidebar li { padding: 0 15px; margin-bottom: 5px; }
+        .sidebar a { display: flex; align-items: center; padding: 10px 10px; color: var(--grey-text); font-size: 16px; border-radius: 6px; font-weight: 500; }
+        .sidebar a i { margin-right: 15px; font-size: 18px; }
+        .sidebar a:hover { background-color: #f7fafc; color: var(--secondary-color); }
+        .sidebar li.active > a { background-color: var(--active-bg); color: var(--primary-color); font-weight: 600; }
+        .nav-title { color: #a0aec0; font-size: 12px; padding: 15px 15px 5px; text-transform: uppercase; }
+        .sidebar li.logout { padding: 0; margin-top: 30px; border-top: 1px solid var(--border-light); }
+        .sidebar li.logout a { color: var(--danger-color); font-weight: 600; }
+
+        /* Main Content Styles */
+        .main-content { flex-grow: 1; }
+        .topbar { height: 75px; display: flex; justify-content: space-between; align-items: center; padding: 20px 30px; background-color: var(--background-light); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); border-bottom: 3px solid var(--border-light); }
+        .page-title h1 { font-size: 26px; color: var(--secondary-color); font-weight: 600; }
+        .page-container { padding: 30px; }
+        .dashboard-header { background-color: var(--background-light); padding: 40px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); margin-bottom: 30px; }
+        .action-box { background-color: var(--background-light); padding: 25px; border-radius: 8px; border-left: 5px solid var(--accent-blue); }
+        .stats-box { background-color: var(--background-light); padding: 25px; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    
+    <div class="dashboard-wrapper">
+        <aside class="sidebar">
+            <div class="logo"><h2>Wopla Admin</h2></div>
+            <nav class="nav-links">
+                <ul>
+                    <li class="active"><a href="#"><i class="fas fa-chart-bar"></i> Dashboard</a></li>
+                    
+                    <li class="nav-title">Service Management</li>
+                    <li><a href="#"><i class="fas fa-utensils"></i> Lunch Kiosk</a></li>
+                    <li><a href="#"><i class="fas fa-home"></i> Home Order</a></li>
+                    <li><a href="#"><i class="fas fa-apple-alt"></i> Fruit Order</a></li>
+                    
+                    <li class="nav-title">User & Admin Management</li>
+                    <li><a href="client_management.html"><i class="fas fa-user-tie"></i> Client Admin</a></li> 
+                    <li><a href="vendors.html"><i class="fas fa-truck"></i> Vendor</a></li>
+                    
+                    <li class="nav-title">System</li>
+                    <li><a href="#"><i class="fas fa-chart-line"></i> Reports & Analytics</a></li>
+                    <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
+                    
+                    <li class="logout"><a href="login.html"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <div class="main-content">
+            
+            <header class="topbar">
+                <div class="page-title"><h1>Super Admin Dashboard <i class="fas fa-chart-bar"></i></h1></div>
+                <div class="admin-info">Welcome, Super Admin! <i class="fas fa-bell"></i></div>
+            </header>
+
+            <main class="page-container">
+                <div class="dashboard-header">
+                    <h1>Welcome to Wopla Super Admin Panel</h1>
+                    <p style="color: var(--grey-text);">Use the sidebar to manage clients, vendors, and services.</p>
+                </div>
+                
+                <div style="display: flex; gap: 20px;">
+                    <div class="action-box" onclick="location.href='client_management.html'" style="flex: 1;">
+                        <h3>Client Admin Management</h3>
+                        <p style="color: var(--grey-text);">Add, modify, or deactivate client portals.</p>
+                    </div>
+                    <div class="action-box" onclick="location.href='vendors.html'" style="flex: 1;">
+                        <h3>Vendor Management</h3>
+                        <p style="color: var(--grey-text);">Manage service providers and their access.</p>
+                    </div>
+                </div>
+
+                <div class="stats-box" style="margin-top: 30px;">
+                    <h3>System Overview</h3>
+                    <p style="font-size: 36px; font-weight: 700; color: var(--primary-color);">520 Total Users</p>
+                </div>
+                <li><a href="lunch_kiosk.html"><i class="fas fa-utensils"></i> Lunch Kiosk</a></li>
+            </main>
+        </div>
+    </div>
+</body>
+</html>
