@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Payment Module</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    background:#f5f7fa;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+}
+.container{
+    width:900px;
+    background:#fff;
+    border-radius:10px;
+    box-shadow:0 5px 20px rgba(0,0,0,0.1);
+}
+.header{
+    background:#2a5298;
+    color:#fff;
+    padding:20px;
+}
+.content{
+    display:flex;
+}
+.left,.right{
+    flex:1;
+    padding:25px;
+}
+.dish-card,.bank{
+    border:2px solid #ddd;
+    padding:15px;
+    border-radius:8px;
+    margin-bottom:10px;
+    cursor:pointer;
+}
+.selected{
+    border-color:#2a5298;
+    background:#eef3ff;
+}
+button{
+    width:100%;
+    padding:15px;
+    background:#2a5298;
+    color:#fff;
+    border:none;
+    border-radius:8px;
+    font-size:16px;
+    cursor:pointer;
+}
+button:disabled{
+    background:#ccc;
+}
+.success{
+    display:none;
+    margin-top:20px;
+    padding:20px;
+    border:2px solid #2ecc71;
+    background:#eafaf1;
+    text-align:center;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <div class="header">
+        <h2><i class="fas fa-credit-card"></i> Payment Module</h2>
+    </div>
+
+    <div class="content">
+        <div class="left">
+            <h3>Select Dish</h3>
+            <div id="dishes"></div>
+            <p><b>Selected:</b> <span id="dishName">None</span></p>
+            <p><b>Amount:</b> $<span id="amount">0</span></p>
+        </div>
+
+        <div class="right">
+            <h3>Select Bank</h3>
+            <div class="bank" data-bank="Habib">Habib Bank</div>
+            <div class="bank" data-bank="Alfalah">Alfalah Bank</div>
+            <div class="bank" data-bank="Meezan">Meezan Bank</div>
+
+            <br>
+            <button id="payBtn" disabled>Send Payment</button>
+
+            <div class="success" id="success">
+                <h3>✅ Payment Paid Successfully</h3>
+                <p id="successText"></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const dishes = [
+    {name:"Chicken Biryani", price:12},
+    {name:"Mutton Karahi", price:15},
+    {name:"Butter Chicken", price:14}
+];
+
+let selectedDish=null;
+let selectedBank=null;
+
+const dishDiv=document.getElementById("dishes");
+const dishName=document.getElementById("dishName");
+const amount=document.getElementById("amount");
+const payBtn=document.getElementById("payBtn");
+const success=document.getElementById("success");
+const successText=document.getElementById("successText");
+
+// Load dishes
+dishes.forEach(d=>{
+    const div=document.createElement("div");
+    div.className="dish-card";
+    div.innerHTML=`${d.name} - $${d.price}`;
+    div.onclick=()=>{
+        document.querySelectorAll(".dish-card").forEach(x=>x.classList.remove("selected"));
+        div.classList.add("selected");
+        selectedDish=d;
+        dishName.innerText=d.name;
+        amount.innerText=d.price;
+        checkBtn();
+    };
+    dishDiv.appendChild(div);
+});
+
+// Bank click + CODE CHECK
+document.querySelectorAll(".bank").forEach(bank=>{
+    bank.onclick=()=>{
+        const code=prompt("Enter bank security code:");
+        if(code!=="1045"){
+            alert("❌ Wrong Code");
+            return;
+        }
+        alert("✅ Code Verified");
+        document.querySelectorAll(".bank").forEach(b=>b.classList.remove("selected"));
+        bank.classList.add("selected");
+        selectedBank=bank.dataset.bank;
+        checkBtn();
+    };
+});
+
+function checkBtn(){
+    payBtn.disabled=!(selectedDish && selectedBank);
+}
+
+payBtn.onclick=()=>{
+    success.style.display="block";
+    successText.innerText=
+    `Your payment of $${selectedDish.price} for ${selectedDish.name} via ${selectedBank} has been completed.`;
+};
+</script>
+
+</body>
+</html>
